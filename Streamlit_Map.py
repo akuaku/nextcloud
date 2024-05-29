@@ -5,26 +5,18 @@ from pyproj import Transformer
 
 # Data manipulation
 import pandas as pd
-import numpy as np
 import re
 
 # DATA PROCESSING
 
 # STEP 1: Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
 # Read in file
-mesh_blocks_file_path = 'meshblocks-auckland-1.csv'
-mesh_blocks_columns_to_import = ['WKT', 'SA22022_V1_00_NAME_ASCII']
-mesh_blocks = pd.read_csv(mesh_blocks_file_path, usecols=mesh_blocks_columns_to_import)
-
-# Read basic_inference_data file
-inference_data_file_path = 'basic_inference_data.csv'
-inference_data = pd.read_csv(inference_data_file_path)
-
-# Merge the mesh blocks with the inference data on the SA2 code
-merged_data = pd.merge(mesh_blocks, inference_data, left_on='SA22022_V1_00_NAME_ASCII', right_on='SA22023_V1_NAME_ASCII', how='left')
+file_path = 'output_crash.csv'
+columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount']
+inference_data = pd.read_csv(file_path, usecols=columns_to_import)
 
 # Convert "WKT" to list with a polygon string for each row
-coordinates = merged_data['WKT'].astype(str).tolist()
+coordinates = inference_data['WKT'].astype(str).tolist()
 
 # Converts str list format to standard lon, lat coordinates.
 # New Zealand Transverse Mercator 2000 to EPSG:4326 WGS 84
@@ -67,9 +59,9 @@ def convert_epsg_to_stdlonlat(coordinates_list):
 
 polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 
-# STEP 2: Create Tooltip files from SA22022_V1_00_NAME_ASCII
-tooltips = merged_data['SA22022_V1_00_NAME_ASCII'].astype(str).tolist()
-crashes_counts = merged_data['crashesCount'].astype(str).tolist()
+# STEP 2: Create Tooltip and Popup content from SA22023_V1_00_NAME_ASCII and crashesCount
+tooltips = inference_data['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
+crashes_counts = inference_data['crashesCount'].astype(str).tolist()
 
 # CREATE MAP IN STREAMLIT
 
