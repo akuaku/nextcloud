@@ -1,5 +1,6 @@
 
 # Maps on Streamlit
+from folium import Popup
 import streamlit as st
 import folium
 from streamlit_folium import folium_static
@@ -12,7 +13,7 @@ import re
 
 # DATA PROCESSING
 
-# STEP1 : Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
+# STEP 1: Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
 # Read in file
 file_path = 'meshblocks-auckland-1.csv'
 columns_to_import = ['WKT', 'SA22022_V1_00_NAME_ASCII']
@@ -65,29 +66,27 @@ polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 # STEP 2: Create Tooltip files from SA22022_V1_00_NAME_ASCII
 tooltips = mesh_blocks['SA22022_V1_00_NAME_ASCII'].astype(str).tolist()
 
-
 # CREATE MAP IN STREAMLIT
 
 # Set up the Streamlit app
 st.title("Auckland City Crash Map")
 
 # Create a folium map centered around Auckland, New Zealand
-m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12, width=1000, height=800)
+m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12)
 
 # Add mesh block tile layer to the map
 folium.TileLayer('openstreetmap').add_to(m)
 
-# Add polygons representing mesh blocks to the map
+# Add polygons representing mesh blocks to the map with popups
 for i in range(len(polygon_coords_list)):
     poly = polygon_coords_list[i]
+    popup = Popup(tooltips[i], parse_html=True)
     folium.Polygon(locations=poly, color='SteelBlue', weight=1.5, fill=True, fill_color='blue', 
-                   fill_opacity=0.1, tooltip=tooltips[i]).add_to(m)
+                   fill_opacity=0.1, popup=popup).add_to(m)
 
 # Add layer controls
 folium.LayerControl().add_to(m)
 
 # Display the map with the polygon in the Streamlit app
 folium_static(m)
-
-
 
