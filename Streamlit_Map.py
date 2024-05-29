@@ -1,6 +1,3 @@
-
-# Maps on Streamlit
-from folium import Popup
 import streamlit as st
 import folium
 from streamlit_folium import folium_static
@@ -15,12 +12,19 @@ import re
 
 # STEP 1: Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
 # Read in file
-file_path = 'meshblocks-auckland-1.csv'
-columns_to_import = ['WKT', 'SA22022_V1_00_NAME_ASCII']
-mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
+mesh_blocks_file_path = 'meshblocks-auckland-1.csv'
+mesh_blocks_columns_to_import = ['WKT', 'SA22022_V1_00_NAME_ASCII']
+mesh_blocks = pd.read_csv(mesh_blocks_file_path, usecols=mesh_blocks_columns_to_import)
+
+# Read basic_inference_data file
+inference_data_file_path = 'basic_inference_data.csv'
+inference_data = pd.read_csv(inference_data_file_path)
+
+# Merge the mesh blocks with the inference data on the SA2 code
+merged_data = pd.merge(mesh_blocks, inference_data, left_on='SA22022_V1_00_NAME_ASCII', right_on='SA22023_V1_NAME_ASCII', how='left')
 
 # Convert "WKT" to list with a polygon string for each row
-coordinates = row_strings = mesh_blocks['WKT'].astype(str).tolist()
+coordinates = merged_data['WKT'].astype(str).tolist()
 
 # Converts str list format to standard lon, lat coordinates.
 # New Zealand Transverse Mercator 2000 to EPSG:4326 WGS 84
@@ -64,7 +68,8 @@ def convert_epsg_to_stdlonlat(coordinates_list):
 polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 
 # STEP 2: Create Tooltip files from SA22022_V1_00_NAME_ASCII
-tooltips = mesh_blocks['SA22022_V1_00_NAME_ASCII'].astype(str).tolist()
+tooltips = merged_data['SA22022_V1_00_NAME_ASCII'].astype(str).tolist()
+crashes_counts = merged_data['crashesCount'].astype(str).tolist()
 
 # CREATE MAP IN STREAMLIT
 
@@ -72,21 +77,31 @@ tooltips = mesh_blocks['SA22022_V1_00_NAME_ASCII'].astype(str).tolist()
 st.title("Auckland City Crash Map")
 
 # Create a folium map centered around Auckland, New Zealand
-m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12)
+m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12, width='100%', height='80%')
 
 # Add mesh block tile layer to the map
 folium.TileLayer('openstreetmap').add_to(m)
 
-# Add polygons representing mesh blocks to the map with popups
+# Add polygons representing mesh blocks to the map
 for i in range(len(polygon_coords_list)):
     poly = polygon_coords_list[i]
-    popup = Popup(tooltips[i], parse_html=True)
-    folium.Polygon(locations=poly, color='SteelBlue', weight=1.5, fill=True, fill_color='blue', 
-                   fill_opacity=0.1, popup=popup).add_to(m)
+    tooltip = tooltips[i]
+    crashes_count = crashes_counts[i]
+    popup_content = f"{tooltip}<br>Crashes Count: {crashes_count}"
+    popup = folium.Popup(popup_content, parse_html=True)
+    folium.Polygon(
+        locations=poly, 
+        color='SteelBlue', 
+        weight=1.5, 
+        fill=True, 
+        fill_color='blue', 
+        fill_opacity=0.1, 
+        tooltip=tooltip, 
+        popup=popup
+    ).add_to(m)
 
 # Add layer controls
 folium.LayerControl().add_to(m)
 
 # Display the map with the polygon in the Streamlit app
 folium_static(m)
-
