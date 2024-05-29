@@ -6,7 +6,7 @@ import pandas as pd
 import re
 
 # STEP 1: Load the data
-file_path = 'meshblocks-auckland-1.csv'
+file_path = 'basic_inference_data.csv'
 columns_to_import = ['SA22023_V1_00_NAME_ASCII']
 mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
 
