@@ -6,17 +6,16 @@ from pyproj import Transformer
 # Data manipulation
 import pandas as pd
 import re
-
 # DATA PROCESSING
 
 # STEP 1: Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
 # Read in file
 file_path = 'output_crash.csv'
-columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount']
-inference_data = pd.read_csv(file_path, usecols=columns_to_import)
+columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y']
+mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
 
 # Convert "WKT" to list with a polygon string for each row
-coordinates = inference_data['WKT'].astype(str).tolist()
+coordinates = row_strings = mesh_blocks['WKT'].astype(str).tolist()
 
 # Converts str list format to standard lon, lat coordinates.
 # New Zealand Transverse Mercator 2000 to EPSG:4326 WGS 84
@@ -59,9 +58,9 @@ def convert_epsg_to_stdlonlat(coordinates_list):
 
 polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 
-# STEP 2: Create Tooltip and Popup content from SA22023_V1_00_NAME_ASCII and crashesCount
-tooltips = inference_data['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
-crashes_counts = inference_data['crashesCount'].astype(str).tolist()
+# STEP 2: Create Tooltip files from SA22022_V1_00_NAME_ASCII
+tooltips = mesh_blocks['SA22022_V1_00_NAME_ASCII_y'].astype(str).tolist()
+
 
 # CREATE MAP IN STREAMLIT
 
@@ -78,9 +77,7 @@ folium.TileLayer('openstreetmap').add_to(m)
 for i in range(len(polygon_coords_list)):
     poly = polygon_coords_list[i]
     tooltip = tooltips[i]
-    crashes_count = crashes_counts[i]
-    popup_content = f"{tooltip}<br>Crashes Count: {crashes_count}"
-    popup = folium.Popup(popup_content, parse_html=True)
+    popup = folium.Popup(tooltip, parse_html=True)
     folium.Polygon(
         locations=poly, 
         color='SteelBlue', 
@@ -97,3 +94,5 @@ folium.LayerControl().add_to(m)
 
 # Display the map with the polygon in the Streamlit app
 folium_static(m)
+
+
