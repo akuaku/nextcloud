@@ -14,7 +14,7 @@ import re
 
 # STEP1 : Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
 # Read in file
-file_path = 'meshblocks-auckland.csv'
+file_path = 'meshblocks-auckland-1.csv'
 columns_to_import = ['WKT', 'SA22022_V1_00_NAME_ASCII']
 mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
 
