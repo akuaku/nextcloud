@@ -16,15 +16,19 @@ data = load_data(file_path)
 # Convert date column to datetime format with dayfirst=True
 data['date'] = pd.to_datetime(data['date'], dayfirst=True)
 
-# Create a date input widget
-selected_date = st.date_input("Select a date", value=datetime.today())
+# Create a sidebar for filters
+st.sidebar.header("Filters")
 
-# Filter the data based on the selected date
-filtered_data = data[data['date'].dt.date == selected_date]
+# Create date and light condition input widgets
+selected_date = st.sidebar.date_input("Select a date", value=datetime.today())
+selected_light = st.sidebar.selectbox("Select light condition", options=['day', 'night'])
 
-# Check if there is data for the selected date
+# Filter the data based on the selected date and light condition
+filtered_data = data[(data['date'].dt.date == selected_date) & (data['partOfDay'] == selected_light)]
+
+# Check if there is data for the selected date and light condition
 if filtered_data.empty:
-    st.warning("No data available for the selected date.")
+    st.warning("No data available for the selected date and light condition.")
 else:
     # Convert "WKT" to list with a polygon string for each row
     coordinates = filtered_data['WKT'].astype(str).tolist()
