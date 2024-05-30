@@ -10,12 +10,18 @@ import re
 
 # STEP 1: Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
 # Read in file
-file_path = 'output_crash.csv'
-columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount']
-mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
+#file_path = 'output_crash.csv'
+#columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount']
+#mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
+
+# Load data efficiently
+data = pd.read_csv('output_crash.csv', usecols=['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount'])
+
+# Convert to necessary format only once
+coordinates = data['WKT'].astype(str).tolist()
 
 # Convert "WKT" to list with a polygon string for each row
-coordinates = row_strings = mesh_blocks['WKT'].astype(str).tolist()
+#coordinates = row_strings = mesh_blocks['WKT'].astype(str).tolist()
 
 # Converts str list format to standard lon, lat coordinates.
 # New Zealand Transverse Mercator 2000 to EPSG:4326 WGS 84
@@ -59,8 +65,11 @@ def convert_epsg_to_stdlonlat(coordinates_list):
 polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 
 # STEP 2: Create Tooltip files from SA22022_V1_00_NAME_ASCII
-tooltips = mesh_blocks['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
-crashes_counts = mesh_blocks['crashesCount'].astype(str).tolist()
+#tooltips = mesh_blocks['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
+#crashes_counts = mesh_blocks['crashesCount'].astype(str).tolist()
+crashes_counts = data['crashesCount'].astype(str).tolist()
+tooltips = data['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
+
 
 # CREATE MAP IN STREAMLIT
 
