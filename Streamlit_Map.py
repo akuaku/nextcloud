@@ -11,7 +11,7 @@ import re
 # STEP 1: Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
 # Read in file
 file_path = 'output_crash.csv'
-columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y']
+columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount']
 mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
 
 # Convert "WKT" to list with a polygon string for each row
@@ -60,7 +60,7 @@ polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 
 # STEP 2: Create Tooltip files from SA22022_V1_00_NAME_ASCII
 tooltips = mesh_blocks['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
-
+crashes_counts = mesh_blocks['crashesCount'].astype(str).tolist()
 
 # CREATE MAP IN STREAMLIT
 
@@ -77,7 +77,16 @@ folium.TileLayer('openstreetmap').add_to(m)
 for i in range(len(polygon_coords_list)):
     poly = polygon_coords_list[i]
     tooltip = tooltips[i]
-    popup = folium.Popup(tooltip, parse_html=True)
+    crashes_count = crashes_counts[i]
+    
+    if crashes_count == "0":
+        crash_info = "There will be 3 or less crashes"
+    else:
+        crash_info = "There will be 4 or more crashes"
+    
+    popup_content = f"{crash_info}"
+    #popup_content = f"{tooltip}<br>Crashes Count: {crashes_count}"
+    popup = folium.Popup(popup_content, parse_html=True)
     folium.Polygon(
         locations=poly, 
         color='SteelBlue', 
