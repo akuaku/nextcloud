@@ -96,10 +96,10 @@ else:
         folium.Polygon(
             locations=poly,
             color='#ff7f08',
-            weight=1.5,
+            weight=3,
             fill=True,
             fill_color='#ff7f08',
-            fill_opacity=0.1,
+            fill_opacity=0.3,
             tooltip=tooltip,
             popup=popup
         ).add_to(m)
