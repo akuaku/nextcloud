@@ -16,13 +16,18 @@ data = load_data(file_path)
 # Convert date column to datetime format with dayfirst=True
 data['date'] = pd.to_datetime(data['date'], dayfirst=True)
 
+# Get the unique dates available in the data
+available_dates = data['date'].dt.date.unique()
+min_date = min(available_dates)
+max_date = max(available_dates)
+
 # Create a sidebar for filters
 st.sidebar.header("Filters")
 
 # Create date, part of day, and crash area input widgets
-selected_date = st.sidebar.date_input("Select a date", value=datetime.today())
+selected_date = st.sidebar.date_input("Select a date", value=min_date, min_value=min_date, max_value=max_date)
 selected_part_of_day = st.sidebar.selectbox("Select part of day", options=['day', 'night'])
-selected_crash_area = st.sidebar.selectbox("Select crash area type", options=['all','low crash area', 'high crash area' ])
+selected_crash_area = st.sidebar.selectbox("Select crash area type", options=['all', 'low crash area', 'high crash area'])
 
 # Filter the data based on the selected date and part of day
 filtered_data = data[(data['date'].dt.date == selected_date) & (data['partOfDay'] == selected_part_of_day)]
@@ -74,7 +79,7 @@ else:
     st.title("Auckland City Crash Map")
 
     # Create a folium map centered around Auckland, New Zealand
-    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=14, width='100%', height='80%')
+    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12, width='100%', height='80%')
 
     # Add mesh block tile layer to the map
     folium.TileLayer('openstreetmap').add_to(m)
