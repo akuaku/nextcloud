@@ -35,9 +35,9 @@ filtered_data = data[(data['date'].dt.date == selected_date) & (data['partOfDay'
 
 # Further filter the data based on the selected crash area type
 if selected_crash_area == 'low crash area':
-    filtered_data = filtered_data[filtered_data['crashesCount'] == 0]
+    filtered_data = filtered_data[filtered_data['predicted_value'] == 0]
 elif selected_crash_area == 'high crash area':
-    filtered_data = filtered_data[filtered_data['crashesCount'] == 1]
+    filtered_data = filtered_data[filtered_data['predicted_value'] == 1]
 
 # Check if there is data for the selected filters
 if filtered_data.empty:
@@ -73,12 +73,12 @@ else:
 
     polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 
-    crashes_counts = filtered_data['crashesCount'].astype(str).tolist()
-    tooltips = filtered_data['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
+    crashes_counts = filtered_data['predicted_value'].astype(str).tolist()
+    tooltips = filtered_data['SA2_Name'].astype(str).tolist()
 
     # Create the map
     st.title("Auckland City Crash Map")
-    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=15)
+    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12)
 
     # Add polygons representing mesh blocks to the map
     for i in range(len(polygon_coords_list)):
