@@ -2,30 +2,20 @@ import streamlit as st
 import folium
 from streamlit_folium import folium_static
 from pyproj import Transformer
+
+# Data manipulation
 import pandas as pd
 import re
+# DATA PROCESSING
 
-# Load the crash data with date and crashes count
+# STEP 1: Convert all the mesh block data points to WGS84 (latitude/longitude) for plotting on map
+# Read in file
 file_path = 'output_crash.csv'
-columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount', 'date']
-crash_data = pd.read_csv(file_path, usecols=columns_to_import)
-
-# Explicitly specify the date format
-crash_data['date'] = pd.to_datetime(crash_data['date'], format='%d/%m/%Y', errors='coerce')
-
-# Check for any parsing errors
-if crash_data['date'].isnull().any():
-    st.warning("Some dates could not be parsed. Please check the format in the CSV file.")
-
-# Date selection
-st.title("Auckland City Crash Map")
-selected_date = st.date_input("Select a date", crash_data['date'].min())
-
-# Filter the crash data based on the selected date
-filtered_crash_data = crash_data[crash_data['date'] == pd.to_datetime(selected_date)]
+columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y']
+mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
 
 # Convert "WKT" to list with a polygon string for each row
-coordinates = filtered_crash_data['WKT'].astype(str).tolist()
+coordinates = row_strings = mesh_blocks['WKT'].astype(str).tolist()
 
 # Converts str list format to standard lon, lat coordinates.
 # New Zealand Transverse Mercator 2000 to EPSG:4326 WGS 84
@@ -68,16 +58,17 @@ def convert_epsg_to_stdlonlat(coordinates_list):
 
 polygon_coords_list = convert_epsg_to_stdlonlat(coordinates)
 
-# Create Tooltip and Popup content from SA22022_V1_00_NAME_ASCII and crashes count
-tooltips = []
-for i, row in filtered_crash_data.iterrows():
-    tooltip = f"{row['SA22023_V1_00_NAME_ASCII_y']}<br>Crashes Count: {row['crashesCount']}"
-    tooltips.append(tooltip)
+# STEP 2: Create Tooltip files from SA22022_V1_00_NAME_ASCII
+tooltips = mesh_blocks['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
+
 
 # CREATE MAP IN STREAMLIT
 
+# Set up the Streamlit app
+st.title("Auckland City Crash Map")
+
 # Create a folium map centered around Auckland, New Zealand
-m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12)
+m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12, width='100%', height='80%')
 
 # Add mesh block tile layer to the map
 folium.TileLayer('openstreetmap').add_to(m)
