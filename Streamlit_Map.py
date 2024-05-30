@@ -95,7 +95,7 @@ else:
         popup = folium.Popup(popup_content, parse_html=True)
         folium.Polygon(
             locations=poly,
-            color='SteelBlue',
+            color='#ff7f08',
             weight=1.5,
             fill=True,
             fill_color='blue',
