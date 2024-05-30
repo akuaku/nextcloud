@@ -6,6 +6,9 @@ import pandas as pd
 import re
 from datetime import datetime
 
+# Set the layout to wide mode
+st.set_page_config(layout="wide")
+
 @st.cache_data
 def load_data(file_path):
     return pd.read_csv(file_path)
@@ -21,13 +24,11 @@ available_dates = data['date'].dt.date.unique()
 min_date = min(available_dates)
 max_date = max(available_dates)
 
-# Create a sidebar for filters
+# Create sidebar for filters
 st.sidebar.header("Filters")
-
-# Create date, part of day, and crash area input widgets
 selected_date = st.sidebar.date_input("Select a date", value=min_date, min_value=min_date, max_value=max_date)
 selected_part_of_day = st.sidebar.selectbox("Select part of day", options=['day', 'night'])
-selected_crash_area = st.sidebar.selectbox("Select crash area type", options=['all', 'low crash area', 'high crash area'])
+selected_crash_area = st.sidebar.selectbox("Select crash area type", options=['low crash area', 'high crash area', 'both'])
 
 # Filter the data based on the selected date and part of day
 filtered_data = data[(data['date'].dt.date == selected_date) & (data['partOfDay'] == selected_part_of_day)]
@@ -75,41 +76,52 @@ else:
     crashes_counts = filtered_data['crashesCount'].astype(str).tolist()
     tooltips = filtered_data['SA22023_V1_00_NAME_ASCII_y'].astype(str).tolist()
 
-    # CREATE MAP IN STREAMLIT
+    # Create the map
     st.title("Auckland City Crash Map")
-
-    # Create a folium map centered around Auckland, New Zealand
-    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=14, width='100%', height='80%', responsive=True)
-
-    # Add mesh block tile layer to the map
-    folium.TileLayer('openstreetmap').add_to(m)
+    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12)
 
     # Add polygons representing mesh blocks to the map
     for i in range(len(polygon_coords_list)):
         poly = polygon_coords_list[i]
         tooltip = tooltips[i]
         crashes_count = crashes_counts[i]
-        
+
         if crashes_count == "0":
             crash_info = "There will be 3 or less crashes"
         else:
             crash_info = "There will be 4 or more crashes"
-        
+
         popup_content = f"{crash_info}"
         popup = folium.Popup(popup_content, parse_html=True)
         folium.Polygon(
-            locations=poly, 
-            color='SteelBlue', 
-            weight=1.5, 
-            fill=True, 
-            fill_color='blue', 
-            fill_opacity=0.1, 
-            tooltip=tooltip, 
+            locations=poly,
+            color='SteelBlue',
+            weight=1.5,
+            fill=True,
+            fill_color='blue',
+            fill_opacity=0.1,
+            tooltip=tooltip,
             popup=popup
         ).add_to(m)
 
-    # Add layer controls
-    folium.LayerControl().add_to(m)
-
     # Display the map with the polygon in the Streamlit app
-    folium_static(m, width=1000, height=700)
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            padding: 0;
+        }
+        .main .block-container {
+            padding-top: 2rem;
+            padding-bottom: 1rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    folium_static(m, width=1100, height=650)
