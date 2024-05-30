@@ -98,7 +98,7 @@ else:
             color='#ff7f08',
             weight=1.5,
             fill=True,
-            fill_color='blue',
+            fill_color='#ff7f08',
             fill_opacity=0.1,
             tooltip=tooltip,
             popup=popup
