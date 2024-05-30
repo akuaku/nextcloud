@@ -124,4 +124,4 @@ else:
         """,
         unsafe_allow_html=True,
     )
-    folium_static(m, width=1100, height=650)
+    folium_static(m, width=1100, height=600)
