@@ -78,7 +78,7 @@ else:
 
     # Create the map
     st.title("Auckland City Crash Map")
-    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12)
+    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=15)
 
     # Add polygons representing mesh blocks to the map
     for i in range(len(polygon_coords_list)):
