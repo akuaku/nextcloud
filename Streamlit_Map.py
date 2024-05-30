@@ -112,4 +112,4 @@ else:
     folium.LayerControl().add_to(m)
 
     # Display the map with the polygon in the Streamlit app
-    folium_static(m, width=1200, height=800)
+    folium_static(m, width=1000, height=700)
