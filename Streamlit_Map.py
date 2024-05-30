@@ -11,7 +11,11 @@ columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount', 'date'
 crash_data = pd.read_csv(file_path, usecols=columns_to_import)
 
 # Explicitly specify the date format
-crash_data['date'] = pd.to_datetime(crash_data['date'], format='%d/%m/%Y')
+crash_data['date'] = pd.to_datetime(crash_data['date'], format='%d/%m/%Y', errors='coerce')
+
+# Check for any parsing errors
+if crash_data['date'].isnull().any():
+    st.warning("Some dates could not be parsed. Please check the format in the CSV file.")
 
 # Date selection
 st.title("Auckland City Crash Map")
