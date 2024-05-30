@@ -19,16 +19,23 @@ data['date'] = pd.to_datetime(data['date'], dayfirst=True)
 # Create a sidebar for filters
 st.sidebar.header("Filters")
 
-# Create date and light condition input widgets
+# Create date, part of day, and crash area input widgets
 selected_date = st.sidebar.date_input("Select a date", value=datetime.today())
-selected_light = st.sidebar.selectbox("Select light condition", options=['day', 'night'])
+selected_part_of_day = st.sidebar.selectbox("Select part of day", options=['day', 'night'])
+selected_crash_area = st.sidebar.selectbox("Select crash area type", options=['all','low crash area', 'high crash area' ])
 
-# Filter the data based on the selected date and light condition
-filtered_data = data[(data['date'].dt.date == selected_date) & (data['partOfDay'] == selected_light)]
+# Filter the data based on the selected date and part of day
+filtered_data = data[(data['date'].dt.date == selected_date) & (data['partOfDay'] == selected_part_of_day)]
 
-# Check if there is data for the selected date and light condition
+# Further filter the data based on the selected crash area type
+if selected_crash_area == 'low crash area':
+    filtered_data = filtered_data[filtered_data['crashesCount'] == 0]
+elif selected_crash_area == 'high crash area':
+    filtered_data = filtered_data[filtered_data['crashesCount'] == 1]
+
+# Check if there is data for the selected filters
 if filtered_data.empty:
-    st.warning("No data available for the selected date and light condition.")
+    st.warning("No data available for the selected filters.")
 else:
     # Convert "WKT" to list with a polygon string for each row
     coordinates = filtered_data['WKT'].astype(str).tolist()
