@@ -13,9 +13,14 @@ import re
 #file_path = 'output_crash.csv'
 #columns_to_import = ['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount']
 #mesh_blocks = pd.read_csv(file_path, usecols=columns_to_import)
+@st.cache_data
+def load_data(file_path):
+    return pd.read_parquet(file_path)
 
+file_path = 'output_crash.parquet'
+data = load_data(file_path)
 # Load data efficiently
-data = pd.read_csv('output_crash.csv', usecols=['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount'])
+#data = pd.read_csv('output_crash.csv', usecols=['WKT', 'SA22023_V1_00_NAME_ASCII_y', 'crashesCount'])
 
 # Convert to necessary format only once
 coordinates = data['WKT'].astype(str).tolist()
