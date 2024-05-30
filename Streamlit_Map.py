@@ -79,7 +79,7 @@ else:
     st.title("Auckland City Crash Map")
 
     # Create a folium map centered around Auckland, New Zealand
-    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=14)
+    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=14, width='100%', height='80%', responsive=True)
 
     # Add mesh block tile layer to the map
     folium.TileLayer('openstreetmap').add_to(m)
