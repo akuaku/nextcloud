@@ -52,6 +52,11 @@ else:
 
         def convert_long_lat_pairs(coords):
             numeric_values = re.findall(r'-?\d+\.\d+', coords)
+            
+            # Ensure that we have an even number of numeric values
+            if len(numeric_values) % 2 != 0:
+                return []
+            
             pairs = [[float(numeric_values[i]), float(numeric_values[i+1])] for i in range(0, len(numeric_values), 2)]
             return pairs
 
@@ -61,12 +66,15 @@ else:
 
         for coords in coordinates_list:
             coordinate_pairs = convert_long_lat_pairs(coords)
+            
+            # Skip invalid coordinate pairs
+            if not coordinate_pairs:
+                continue
+            
             polygon_coords = []
-
             for pair in coordinate_pairs:
                 lon, lat = transformer.transform(pair[1], pair[0])
                 polygon_coords.append([lon, lat])
-
             polygon_coords_list.append(polygon_coords)
 
         return polygon_coords_list
@@ -77,8 +85,8 @@ else:
     tooltips = filtered_data['SA2_Name'].astype(str).tolist()
 
     # Create the map
-    st.title("Auckland Crash Model")
-    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=12)
+    st.title("Auckland City Crash Map")
+    m = folium.Map(location=[-36.8485, 174.7633], zoom_start=13)
 
     # Add polygons representing mesh blocks to the map
     for i in range(len(polygon_coords_list)):
