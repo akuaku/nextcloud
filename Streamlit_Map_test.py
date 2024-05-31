@@ -27,8 +27,8 @@ max_date = max(available_dates)
 # Create sidebar for filters
 st.sidebar.header("Filters")
 selected_date = st.sidebar.date_input("Select a date", value=min_date, min_value=min_date, max_value=max_date)
-selected_part_of_day = st.sidebar.selectbox("Select part of day", options=['Day', 'Night'])
-selected_crash_area = st.sidebar.selectbox("Select crash area type", options=['All', 'Low crash area', 'High crash area'])
+selected_part_of_day = st.sidebar.selectbox("Select part of day", options=['day', 'night'])
+selected_crash_area = st.sidebar.selectbox("Select crash area type", options=['all', 'low crash area', 'high crash area'])
 
 # Filter the data based on the selected date and part of day
 filtered_data = data[(data['date'].dt.date == selected_date) & (data['partOfDay'] == selected_part_of_day)]
