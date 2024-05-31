@@ -85,7 +85,7 @@ else:
     tooltips = filtered_data['SA2_Name'].astype(str).tolist()
 
     # Create the map
-    st.title("Auckland Accident Map")
+    st.title("Auckland Accident Hotspot Model")
     m = folium.Map(location=[-36.8485, 174.7633], zoom_start=13)
 
     # Add polygons representing mesh blocks to the map
