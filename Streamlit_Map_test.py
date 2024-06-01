@@ -108,7 +108,7 @@ else:
             fill=True,
             fill_color='#ff7f08',
             fill_opacity=0.3,
-            tooltip=tooltip,
+            #tooltip=tooltip,
             popup=popup
         ).add_to(m)
 
