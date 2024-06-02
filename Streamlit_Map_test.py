@@ -95,9 +95,9 @@ else:
         crashes_count = crashes_counts[i]
 
         if crashes_count == "0":
-            crash_info = "There will be 3 or less crashes"
+            crash_info = "There will be 2 or less crashes"
         else:
-            crash_info = "There will be 4 or more crashes"
+            crash_info = "There will be 3 or more crashes"
 
         popup_content = f"{crash_info}"
         popup = folium.Popup(popup_content, parse_html=True)
