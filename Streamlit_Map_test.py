@@ -109,7 +109,7 @@ else:
             fill_color='#ff7f08',
             fill_opacity=0.3,
             #tooltip=tooltip,
-            popup=popup
+            #popup=popup
         ).add_to(m)
 
     # Display the map with the polygon in the Streamlit app
